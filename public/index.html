@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <link rel="stylesheet" href="components/bootstrap-css/css/bootstrap.css" />
+  
+
+  <script src="components/lodash/lodash.js"></script>
+  <script src="components/jquery/dist/jquery.js"></script>
+  <script src="components/angularjs/angular.js"></script>
+  <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
+
+  <link rel="stylesheet" href="components/ngDialog/css/ngDialog.css" />
+  <link rel="stylesheet" href="components/ngDialog/css/ngDialog-theme-default.min.css" />
+  <script src="components/ngDialog/js/ngDialog.min.js"></script>
+
+
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/app.js"></script>
+</head>
+
+<body>
+  <div id="d" ng-controller="canvasCont">
+
+    <div class="row">
+      <!-- RIGHT COLUMN -->
+      <div class="col-md-3">
+        <div class="toolbox well well-sm">
+        <h4>Colors</h4>
+          <div class="colorblock" ng-repeat="color in colorsArray" style="background:{{color}}" ng-click="selectColor(color)" ng-class="{'selected':color==selectedcolor}"></div>
+          
+        <h4>Brushes111</h4>
+          <div class="sizeblock" ng-repeat="size in sizesArray" style="width:{{size}}px;height:{{size}}px" ng-click="selectSize(size)" ng-class="{'selected':size==selectedsize}"></div>
+        </div>
+
+      </div>
+
+      <!-- CENTRAL ZONE -->
+      <div class="col-md-7">
+
+        <div class="layer-box" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px;">
+          <canvas ng-class="{active: (activeLayerIndex == layer.id), hidden : !layer.visible }" ng-repeat="layer in layers" layerid="layer.id" width="{{canvasWidth}}" height="{{canvasHeight}}" drawing=""></canvas>
+        </div>
+
+      </div>
+
+      <!-- LEFT COLUMN -->
+      <div class="col-md-2">
+
+        <!--layers settings-->
+        <div class="controls well well-sm">
+          <h4>Layers <span class="badge">{{layers.length}}</span></h4>
+          <button ng-click="addLayer()" class="btn btn-primary">Add layer</button>
+
+          <ul class="list-group layer-list">
+            <li title="{{layer.id}}" class="list-group-item" ng-repeat="layer in layers track by $index" ng-click="selectThis(layer)" ng-class="{'layer-invisible': !layer.visible , 'layer-active':layer.id == activeLayerIndex}">
+              <button type="button" class="btn btn-default btn-xs" ng-click="removeThis(layer)"><span class="glyphicon glyphicon-remove"></span>
+              </button>
+              {{layer.name}}
+              <button type="button" class="btn btn-default btn-xs visibility-button" ng-show="layer.visible" ng-click="toggleThis(layer)"><span class="glyphicon glyphicon-eye-close"></span>
+              </button>
+              <button type="button" class="btn btn-default btn-xs visibility-button" ng-show="!layer.visible" ng-click="toggleThis(layer)"><span class="glyphicon glyphicon-eye-open"></span>
+              </button>
+            </li>
+          </ul>
+
+        </div>
+
+
+      </div>
+    </div>
+    
+     {{activeLayerIndex}}
+     
+     {{layers | json}}
+  </div>
+</body>
+
+</html>

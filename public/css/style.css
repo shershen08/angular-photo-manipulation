@@ -1,0 +1,66 @@
+/* Styles go here */
+
+body {
+  font-family: "Eau Naturelle", "Helvetica", "Arial", "Lucida Grande", "Gill Sans", "Verdana", sans-serif;
+  font-weight: 100;
+  color: #444;
+  background-color: #ddd;
+}
+#canvas {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: #FFF;
+  box-shadow: 0 9px 20px -5px rgba(0, 0, 0, 0.8);
+}
+
+h1 {
+  color: #444;
+  font-family: "Eau Naturelle", "Helvetica", "Arial", "Lucida Grande", "Gill Sans", "Verdana", sans-serif;
+  font-weight: 500;
+}
+a {
+  color: #4a9;
+  text-decoration: none;
+  font-style: italic;
+  font-weight: 800;
+}
+.colorblock, .sizeblock {
+  display:inline-block;
+}
+.colorblock {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin:2px;
+  border-radius:5px;
+  border: 2px solid transparent;
+}
+.sizeblock {
+  background: #000;
+  border-radius: 20px;
+  cursor: pointer;
+  margin: 2px;
+}
+.selected {
+  border: 2px solid cyan;
+}
+.visibility-button {
+  float:right;
+}
+.layer-box canvas{
+  position:absolute;
+  z-index:10;
+}
+.layer-box canvas.active{
+  z-index:100;
+}
+.layer-box canvas.hidden{
+  opacity:0;
+}
+.layer-active {
+  background: #0044cc;
+  color:#fff;
+}
+
+ .layer-invisible .visibility-marker {
+  color: #f00;
+}
