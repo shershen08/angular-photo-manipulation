@@ -8,6 +8,7 @@
   <script src="components/lodash/lodash.js"></script>
   <script src="components/jquery/dist/jquery.js"></script>
   <script src="components/angularjs/angular.js"></script>
+  <script src="components/ng-file-upload/ng-file-upload.js"></script>
   <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
 
   <link rel="stylesheet" href="components/ngDialog/css/ngDialog.css" />
@@ -16,17 +17,19 @@
 
 
   <link rel="stylesheet" href="css/style.css" />
-  <script src="js/editor-app.js"></script>
-  
 
-  
   <script src="js/editor-app.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/controllers/canvas-controller.js"></script>
+  <script src="js/controllers/upload-controller.js"></script>
+  <script src="js/directives/color-picker-directive.js"></script>
+  <script src="js/directives/drawing-directive.js"></script>
 </head>
 
 <body>
-  <div id="d" ng-controller="canvasCont">
+  <div class="container">
 
-    <div class="row">
+    <div class="row" ng-controller="canvasCont">
       <!-- RIGHT COLUMN -->
       <div class="col-md-3">
         <div class="toolbox well well-sm">
@@ -76,16 +79,18 @@
 
 
     <div class="row upload-zone-wrapper">      
-      <div ng-app="fileUpload" ng-controller="MyCtrl">
-        ngf-accept="'image/*,application/pdf'">Drop Images or PDFs files here</div>
+      <div ng-controller="uploadCtrl">
+
+
+  <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
+
+
+        <div ngf-accept="'image/*'">Drop Images or PDFs files here</div>
         <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
-        Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
+        <!--Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">-->
       </div>
     </div>
     
-     {{activeLayerIndex}}
-     
-     {{layers | json}}
   </div>
 </body>
 

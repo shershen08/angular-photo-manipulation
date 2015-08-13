@@ -1,6 +1,6 @@
 var express = require('express'),
-  router = express.Router();
-
+  router = express.Router(),
+  config = require('../../config/config');
 
 var debug = require('debug')('http');
 var jade = require('jade');
@@ -9,15 +9,17 @@ var fs = require('fs');
 var path = require('path');
 var multipart = require('connect-multiparty');
 
-app.use(multipart({
-    uploadDir: config.tmp
-}));
+
 
  // mongoose = require('mongoose'),
   //Article = mongoose.model('Article');
 
 module.exports = function (app) {
   app.use('/', router);
+
+  app.use(multipart({
+    uploadDir: config.uploadDir
+}));
 };
 
 router.get('/', function (req, res, next) {
@@ -81,12 +83,4 @@ router.get('/imageanalysis', function (req, res, next) {
 });
 
 
-exports.create = function (req, res, next) {
-    var data = _.pick(req.body, 'type')
-        , uploadPath = path.normalize(cfg.data + '/uploads')
-        , file = req.files.file;
 
-        console.log(file.name); //original name (ie: sunset.png)
-        console.log(file.path); //tmp path (ie: /tmp/12345-xyaz.png)
-    console.log(uploadPath); //uploads directory: (ie: /home/user/data/uploads)
-};

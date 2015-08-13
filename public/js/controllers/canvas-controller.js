@@ -22,8 +22,7 @@ app.controller("canvasCont", ['$scope', '$rootScope','ngDialog', 'APP_PRESETS',
 
 
   /*
-  basic layer structure
-
+  Basic layer structure
   */
   
   $scope.saveLayerName = function(newlayername){

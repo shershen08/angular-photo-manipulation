@@ -67,5 +67,9 @@ a {
 
 
 .upload-zone-wrapper {
-  
+      position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    height: 100px;
 }
