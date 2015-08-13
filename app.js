@@ -3,11 +3,9 @@
 var express = require('express'),
   config = require('./config/config'),
   glob = require('glob'),
-  resemblejs = require('resemblejs'),
   _ = require('lodash'),
   jade = require('jade');
 
-console.log(config.name);
 
 if(config.name != 'dev') {
 	mongoose = require('mongoose');

@@ -2,6 +2,10 @@ var path = require('path'),
     rootPath = path.normalize(__dirname + '/..'),
     env = process.env.NODE_ENV || 'development';
 
+    if (env == 'development') {
+      process.env.DEBUG = 'http';
+    }
+
 var config = {
   development: {
     name : 'dev',
