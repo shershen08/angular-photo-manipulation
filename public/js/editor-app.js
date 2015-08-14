@@ -21,5 +21,6 @@ app.constant('APP_PRESETS', {
       "name": "untitled",
       "id": 0,
       "visible": true
-    }
+    },
+    'uploadDir': '/api/uploads'
 });

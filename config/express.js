@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var compress = require('compression');
 var methodOverride = require('method-override');
+var errorHandler = require('errorhandler');
 
 module.exports = function(app, config) {
   var env = process.env.NODE_ENV || 'development';
@@ -32,11 +33,13 @@ module.exports = function(app, config) {
     require(controller)(app);
   });
 
-  app.use(function (req, res, next) {
+  app.use(errorHandler());
+
+  /*function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
-  });
+  }*/
   
   if(app.get('env') === 'development'){
     app.use(function (err, req, res, next) {

@@ -7,31 +7,16 @@ var jade = require('jade');
 var lwip = require('lwip');
 var fs = require('fs');
 var path = require('path');
-var multipart = require('connect-multiparty');
-
-
 
  // mongoose = require('mongoose'),
   //Article = mongoose.model('Article');
 
-module.exports = function (app) {
-  app.use('/', router);
+  console.log('controllers/home.js');
 
-  app.use(multipart({
-    uploadDir: config.uploadDir
-}));
-};
 
 router.get('/', function (req, res, next) {
-  /*
-  Article.find(function (err, articles) {
-    if (err) return next(err);
-    res.render('index', {
-      title: 'Generator-Express MVC',
-      articles: articles
-    });
-  });
-*/
+  debug('----------------- /home::/ -----------------');
+  next();
 });
 
 
@@ -81,6 +66,12 @@ router.get('/imageanalysis', function (req, res, next) {
 
 
 });
+
+module.exports = function (app) {
+  app.use('/', router);
+
+};
+
 
 
 

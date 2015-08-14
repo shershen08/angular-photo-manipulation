@@ -23,12 +23,16 @@ if(config.name != 'dev') {
 }
 
 
-
 var app = express();
+
+var server = require('http').createServer(app);
 
 require('./config/express')(app, config);
 
-app.listen(config.port, function () {
+require('./app/routes')(app, config);
+
+server.listen(config.port, function () {
   console.log('Express server listening on port ' + config.port);
 });
 
+exports = module.exports = app;

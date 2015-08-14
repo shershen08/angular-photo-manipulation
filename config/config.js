@@ -14,7 +14,8 @@ var config = {
       name: 'image-twister'
     },
     port: 3000,
-    uploadDir: 'files'
+    uploadDir: '/api/uploads',
+    uploadedFilesDir: 'public/gallery'
     //,db: 'mongodb://localhost/image-twister-development'
   },
 
@@ -26,7 +27,7 @@ var config = {
     },
     port: 3000
     ,db: 'mongodb://localhost/image-twister-test',
-    uploadDir: 'files'
+    uploadDir: '/api/uploads'
   },
 
   production: {
@@ -37,7 +38,7 @@ var config = {
     },
     port: 3000
     ,db: 'mongodb://localhost/image-twister-production',
-    uploadDir: 'files'
+    uploadDir: '/api/uploads'
   }
 };
 
