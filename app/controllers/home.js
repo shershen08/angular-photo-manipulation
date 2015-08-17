@@ -1,6 +1,11 @@
+///global modules
+
 var express = require('express'),
   router = express.Router(),
-  config = require('../../config/config');
+  config = require('../../config/config'),
+  _utils = require('../utilities')();
+
+///controller needed modules
 
 var debug = require('debug')('http');
 var jade = require('jade');
@@ -11,40 +16,13 @@ var url = require('url');
 var _ = require('lodash');
 var async = require('async');
 
-
-///////////////////
-//////   UTILITIES
-///////////////////
-
-
-function getQuery(r){
-  var url_parts = url.parse(r.url, true);
-  var query = url_parts.query;
-  return query;
-}
-
-function getUUIDv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-        function(c) {
-            var r = Math.random() * 16 | 0,
-                v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-}
-
-
-function handleWrondResponse(response, statusCode){
-  response.writeHead(statusCode, {'Content-Type': 'text/html'});
-  response.end();
-}
-
-
+//variables
+var galleryFilePath = '../files/';  
+var tmpFilePath = '../tmp/';
 
 //////////////////////
 ////// CONTROLLERS
 //////////////////////
-
-
 
 function displayFileWithEffects(filePath, response, transformationsObject){
 
@@ -58,11 +36,11 @@ function displayFileWithEffects(filePath, response, transformationsObject){
   lwip.open(filePath, function(err, image){
 
       if(err) {
-          handleWrondResponse(response, 404);
+          _utils.handleWrondResponse(response, 404);
           return;
       }
 
-      var tmpFilePath = '../tmp/';
+
       var buffer;
       var newFileName = getUUIDv4() + '.' + fileExtension;
       var newFilePath = path.join(__dirname, (tmpFilePath + newFileName));
@@ -86,27 +64,6 @@ function displayFileWithEffects(filePath, response, transformationsObject){
         response.end();
       });
 
-/*
-        image.batch()
-            //.rotate(45, 'white')
-            .resize(500, 500)
-            .pad(5,5,5,5)
-            .saturate(5)
-            .blur(1)
-           .writeFile(newFilePath, function(err){
-              response.writeHead(200, {'Content-Type': 'text/html'});
-              response.write(newFilePath);
-              response.end();
-            });
-*/
-           /*
-            .toBuffer(fileExtension, function(err, buffer){
-              response.writeHead(200, {'Content-Type': ('image/' + fileExtension)});
-              response.sendfile(buffer);
-             // response.write(buffer);
-              response.end();
-            });
-          */
   });
 }
 
@@ -126,7 +83,10 @@ function displayFileParts(cropConfig, response){
   var _v = parseInt(cropConfig.xStart);
   var _h = parseInt(cropConfig.yStart);
 
-  if(selectionLength <= 0 || selectionLength <= 0 )  handleWrondResponse(response, 400);
+  if(selectionLength <= 0 || selectionLength <= 0 )  {
+    _utils.handleWrondResponse(response, 400);
+    return ;
+  }
 
  lwip.create(selectionLength*2, selectionHeight, 'white', function(err, baseImageInitial){
 
@@ -143,7 +103,7 @@ function displayFileParts(cropConfig, response){
       });
     },
     function(imageOpened1, err, taskDone){
-       //if(err) { handleWrondResponse(response, 404); return; }
+      //if(err) { _utils.handleWrondResponse(response, 404); return; }
       imageOpened1.crop(_v, _h, _v + (selectionLength-1), _h + (selectionHeight-1),
         function(err, imageCropped){
           taskDone(err, imageCropped, '2');
@@ -162,7 +122,7 @@ function displayFileParts(cropConfig, response){
       });
     },
     function(imageOpened2, mainImg, err, taskDone){
-       //if(err) { handleWrondResponse(response, 404); return; }
+      //if(err) { _utils.handleWrondResponse(response, 404); return; }
       imageOpened2.crop(_v, _h, _v + (selectionLength-1), _h + (selectionHeight-1),
         function(err, imageCropped){
           taskDone(err, imageCropped, mainImg, '5');
@@ -213,13 +173,32 @@ router.use('/layout', function (req, res, next) {
   res.render('layout', { title : 'layout page', content: 'content test' }); 
 });
 
+router.get('/folderlist', function (req, res) {
+  debug('----------------- /folderlist -----------------');
+  var query = _utils.getQuery(req);
+  if(query.folder){
+    
+    var filePathArray = [];
 
+    _utils.walk(path.join(__dirname, galleryFilePath ), function(filePath, stat) {
+      var fileName = filePath.split('/');
+      fileName = fileName[fileName.length-1];
+      if(fileName[0] != '.'){
+        filePathArray.push(fileName);
+      }
+    });
+    res.render('folderlist', { title : query.folder, files: filePathArray}); 
+
+  } else {
+    _utils.handleWrondResponse(res, 400);
+  }
+});
 
 router.get('/getimageparts', function (req, res, next) {
   debug('----------------- /getimageparts -----------------');
 
-  var galleryFilePath = '../files/';  
-  var query = getQuery(req);
+
+  var query = _utils.getQuery(req);
   debug(query);
 
   if(query.fileA && query.fileB){
@@ -233,7 +212,7 @@ router.get('/getimageparts', function (req, res, next) {
     }
     displayFileParts(fileConfig, res);
   } else {
-    handleWrondResponse(res, 400);
+    _utils.handleWrondResponse(res, 400);
   }
 });
 
@@ -241,7 +220,6 @@ router.get('/getimageparts', function (req, res, next) {
 router.post('/imageanalysis', function (req, res, next) {
   debug('----------------- /imageanalysis -----------------');
 
-  var galleryFilePath = '../files/';  
   var query = req.body;
 
   if(query.file){
@@ -249,7 +227,7 @@ router.post('/imageanalysis', function (req, res, next) {
     var transformationsObject = query.effects;
     displayFileWithEffects(filePath, res, transformationsObject);
   } else {
-    handleWrondResponse(res, 400);
+    _utils.handleWrondResponse(res, 400);
   }
 });
 
@@ -257,7 +235,3 @@ module.exports = function (app) {
   app.use('/', router);
 
 };
-
-
-
-
