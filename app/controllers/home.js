@@ -111,7 +111,7 @@ function displayFileWithEffects(filePath, response, transformationsObject){
 }
 
 
-//http://localhost:3000/getimageparts?fileA=IMG_3031.jpg&fileB=IMG_3032.jpg&vShift=1&hShift=5
+//http://localhost:3000/getimageparts?fileA=IMG_3031.jpg&fileB=IMG_3032.jpg&xStart=0&xStart=0&xEnd=100&yEnd=100
 
 function displayFileParts(cropConfig, response){
 
@@ -120,12 +120,15 @@ function displayFileParts(cropConfig, response){
 
   debug(cropConfig);
 
-  var imgPart = 200;
+  var selectionHeight = parseInt(cropConfig.yEnd - cropConfig.yStart);
+  var selectionLength = parseInt(cropConfig.xEnd - cropConfig.xStart);
   var tmpFilePath = '../tmp/';
-  var _v = cropConfig.vShift;
-  var _h = cropConfig.hShift;
+  var _v = parseInt(cropConfig.xStart);
+  var _h = parseInt(cropConfig.yStart);
 
- lwip.create(imgPart*2, imgPart, 'white', function(err, baseImageInitial){
+  if(selectionLength <= 0 || selectionLength <= 0 )  handleWrondResponse(response, 400);
+
+ lwip.create(selectionLength*2, selectionHeight, 'white', function(err, baseImageInitial){
 
   function taskDone(tID){
     debug(' ----------- Task ', tID);
@@ -141,7 +144,7 @@ function displayFileParts(cropConfig, response){
     },
     function(imageOpened1, err, taskDone){
        //if(err) { handleWrondResponse(response, 404); return; }
-      imageOpened1.crop(_v*imgPart, _h*imgPart, _v*imgPart + (imgPart-1), _h*imgPart + (imgPart-1),
+      imageOpened1.crop(_v, _h, _v + (selectionLength-1), _h + (selectionHeight-1),
         function(err, imageCropped){
           taskDone(err, imageCropped, '2');
       })
@@ -160,13 +163,19 @@ function displayFileParts(cropConfig, response){
     },
     function(imageOpened2, mainImg, err, taskDone){
        //if(err) { handleWrondResponse(response, 404); return; }
-      imageOpened2.crop(_v*imgPart, _h*imgPart, _v*imgPart + (imgPart-1), _h*imgPart + (imgPart-1),
+      imageOpened2.crop(_v, _h, _v + (selectionLength-1), _h + (selectionHeight-1),
         function(err, imageCropped){
           taskDone(err, imageCropped, mainImg, '5');
       })
     },
     function(image, mainImg, err, taskDone){
-      baseImageInitial.paste((imgPart-1), 0, image, function(err, imageResult){
+      baseImageInitial.paste((selectionLength-1), 0, image, function(err, imageResult){
+
+
+
+
+
+
          taskDone(err, imageResult, '6');
       });
     }
@@ -217,8 +226,10 @@ router.get('/getimageparts', function (req, res, next) {
     var fileConfig = {
       'aPath' : path.join(__dirname, (galleryFilePath + query.fileA)),
       'bPath' : path.join(__dirname, (galleryFilePath + query.fileB)),
-      'hShift': (query.hShift || 0),
-      'vShift': (query.vShift || 0)
+      'xStart': (query.x || 0),
+      'yStart': (query.y || 0),
+      'xEnd': (query._x || 100),
+      'yEnd': (query._y || 100)
     }
     displayFileParts(fileConfig, res);
   } else {
