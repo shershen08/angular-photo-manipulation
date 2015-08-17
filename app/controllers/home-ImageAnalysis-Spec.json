@@ -1,0 +1,55 @@
+{
+    "file": "IMG_3031.jpg",
+    "effects": [
+        {
+            "type": "rotate",
+            "settings": {
+                "active": true,
+                "amount": 45
+            }
+        },
+        {
+            "type": "saturate",
+            "settings": {
+                "active": true,
+                "amount": 1
+            }
+        },
+        {
+            "type": "blur",
+            "settings": {
+                "active": false,
+                "amount": 1
+            }
+        },
+        {
+            "type": "resize",
+            "settings": {
+                "active": false,
+                "amount": 1
+            }
+        },
+        {
+            "type": "pad",
+            "settings": {
+                "active": false,
+                "amount": [
+                    5,
+                    5,
+                    5,
+                    5
+                ]
+            }
+        },
+        {
+            "type": "crop",
+            "settings": {
+                "active": false,
+                "amount": [
+                    200,
+                    200
+                ]
+            }
+        }
+    ]
+}

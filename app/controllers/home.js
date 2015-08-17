@@ -9,20 +9,12 @@ var fs = require('fs');
 var path = require('path');
 var url = require('url');
 var _ = require('lodash');
-
- // mongoose = require('mongoose'),
-  //Article = mongoose.model('Article');
-
-router.post('/', function (req, res, next) {
-  debug('----------------- /home::/ -----------------');
-  next();
-});
+var async = require('async');
 
 
-router.use('/layout', function (req, res, next) {
-  debug('----------------- /layout -----------------');
-  res.render('layout', { title : 'layout page', content: 'content test' }); 
-});
+///////////////////
+//////   UTILITIES
+///////////////////
 
 
 function getQuery(r){
@@ -40,7 +32,21 @@ function getUUIDv4() {
         });
 }
 
-function displayFile(filePath, response, transformationsObject){
+
+function handleWrondResponse(response, statusCode){
+  response.writeHead(statusCode, {'Content-Type': 'text/html'});
+  response.end();
+}
+
+
+
+//////////////////////
+////// CONTROLLERS
+//////////////////////
+
+
+
+function displayFileWithEffects(filePath, response, transformationsObject){
 
   var fileExtension = filePath.split('.');
   fileExtension = fileExtension[(fileExtension.length-1)];
@@ -75,10 +81,10 @@ function displayFile(filePath, response, transformationsObject){
       });
 
       img.writeFile(newFilePath, function(err){
-              response.writeHead(200, {'Content-Type': 'text/html'});
-              response.write(newFilePath);
-              response.end();
-            });
+        response.writeHead(200, {'Content-Type': 'text/html'});
+        response.write(newFilePath);
+        response.end();
+      });
 
 /*
         image.batch()
@@ -104,74 +110,122 @@ function displayFile(filePath, response, transformationsObject){
   });
 }
 
-/*
-{
-    "file": "IMG_3031.jpg",
-    "effects": [
-        {
-            "type": "rotate",
-            "settings": {
-                "active": true,
-                "amount": 45
-            }
-        },
-        {
-            "type": "saturate",
-            "settings": {
-                "active": true,
-                "amount": 1
-            }
-        },
-        {
-            "type": "blur",
-            "settings": {
-                "active": false,
-                "amount": 1
-            }
-        },
-        {
-            "type": "resize",
-            "settings": {
-                "active": false,
-                "amount": 1
-            }
-        },
-        {
-            "type": "pad",
-            "settings": {
-                "active": false,
-                "amount": [
-                    5,
-                    5,
-                    5,
-                    5
-                ]
-            }
-        },
-        {
-            "type": "crop",
-            "settings": {
-                "active": false,
-                "amount": [
-                    200,
-                    200
-                ]
-            }
-        }
-    ]
+
+//http://localhost:3000/getimageparts?fileA=IMG_3031.jpg&fileB=IMG_3032.jpg&vShift=1&hShift=5
+
+function displayFileParts(cropConfig, response){
+
+  var fileExtension = cropConfig.aPath.split('.');
+  fileExtension = fileExtension[(fileExtension.length-1)];
+
+  debug(cropConfig);
+
+  var imgPart = 200;
+  var tmpFilePath = '../tmp/';
+  var _v = cropConfig.vShift;
+  var _h = cropConfig.hShift;
+
+ lwip.create(imgPart*2, imgPart, 'white', function(err, baseImageInitial){
+
+  function taskDone(tID){
+    debug(' ----------- Task ', tID);
+  }
+
+  async.waterfall([
+    //
+    //image 1
+    function(taskDone) {
+      lwip.open(cropConfig.aPath, function(err, image){
+        taskDone(err, image, '1');
+      });
+    },
+    function(imageOpened1, err, taskDone){
+       //if(err) { handleWrondResponse(response, 404); return; }
+      imageOpened1.crop(_v*imgPart, _h*imgPart, _v*imgPart + (imgPart-1), _h*imgPart + (imgPart-1),
+        function(err, imageCropped){
+          taskDone(err, imageCropped, '2');
+      })
+    },
+    function(image, err, taskDone){
+      baseImageInitial.paste(0, 0, image, function(err, imageResult){
+         taskDone(err, imageResult, '3');
+      });
+    },
+    //
+    //image 2
+    function(mainImg, err, taskDone) {
+      lwip.open(cropConfig.bPath, function(err, image){
+        taskDone(err, image, mainImg, '4');
+      });
+    },
+    function(imageOpened2, mainImg, err, taskDone){
+       //if(err) { handleWrondResponse(response, 404); return; }
+      imageOpened2.crop(_v*imgPart, _h*imgPart, _v*imgPart + (imgPart-1), _h*imgPart + (imgPart-1),
+        function(err, imageCropped){
+          taskDone(err, imageCropped, mainImg, '5');
+      })
+    },
+    function(image, mainImg, err, taskDone){
+      baseImageInitial.paste((imgPart-1), 0, image, function(err, imageResult){
+         taskDone(err, imageResult, '6');
+      });
+    }
+  ], function (err, result) {
+
+  result.toBuffer('jpg', function(err, buffer){
+    response.writeHead(200, {'Content-Type': 'image/jpg'});
+    response.write(buffer);
+    response.end();
+  });
+
+});
+
+    
+ })
 }
-*/
-function applyTransformations(batchObj, configObject){
 
 
 
-  return batchObj;
-}
 
-function handleWrondResponse(response, statusCode){
-  response.writeHead(statusCode, {'Content-Type': 'text/html'});
-  response.end();
-}
+
+//////////////
+///// ROUTES
+//////////////
+
+
+router.post('/', function (req, res, next) {
+  debug('----------------- /home::/ -----------------');
+  next();
+});
+
+
+router.use('/layout', function (req, res, next) {
+  debug('----------------- /layout -----------------');
+  res.render('layout', { title : 'layout page', content: 'content test' }); 
+});
+
+
+
+router.get('/getimageparts', function (req, res, next) {
+  debug('----------------- /getimageparts -----------------');
+
+  var galleryFilePath = '../files/';  
+  var query = getQuery(req);
+  debug(query);
+
+  if(query.fileA && query.fileB){
+    var fileConfig = {
+      'aPath' : path.join(__dirname, (galleryFilePath + query.fileA)),
+      'bPath' : path.join(__dirname, (galleryFilePath + query.fileB)),
+      'hShift': (query.hShift || 0),
+      'vShift': (query.vShift || 0)
+    }
+    displayFileParts(fileConfig, res);
+  } else {
+    handleWrondResponse(res, 400);
+  }
+});
+
 
 router.post('/imageanalysis', function (req, res, next) {
   debug('----------------- /imageanalysis -----------------');
@@ -182,7 +236,7 @@ router.post('/imageanalysis', function (req, res, next) {
   if(query.file){
     var filePath = path.join(__dirname, (galleryFilePath + query.file));
     var transformationsObject = query.effects;
-    displayFile(filePath, res, transformationsObject);
+    displayFileWithEffects(filePath, res, transformationsObject);
   } else {
     handleWrondResponse(res, 400);
   }
