@@ -14,7 +14,12 @@ Utils.prototype = {
 	  var query = url_parts.query;
 	  return query;
 	},
+	writeJsonResponse : function(r, data){
 
+		r.writeHead(200, {'Content-Type': 'application/json'});
+        r.end(JSON.stringify(data));
+
+	},
 	getUUIDv4 : function() {
 	    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
 	        function(c) {

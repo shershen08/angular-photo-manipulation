@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <link rel="stylesheet" href="components/bootstrap-css/css/bootstrap.css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="components/lodash/lodash.js"></script>
+  <script src="components/jquery/dist/jquery.js"></script>
+  <script src="components/angularjs/angular.js"></script>
+  <script src="components/ng-file-upload/ng-file-upload.js"></script>
+  <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
+
+  <link rel="stylesheet" href="components/ngDialog/css/ngDialog.css" />
+  <link rel="stylesheet" href="components/ngDialog/css/ngDialog-theme-default.min.css" />
+  <script src="components/ngDialog/js/ngDialog.min.js"></script>
+
+  <title>Composer</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script src="js/editor-app.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/controllers/upload-controller.js"></script>
+  <script src="js/controllers/composer-controller.js"></script>
+  <script src="js/services/general-data-service.js"></script>
+  <script src="js/directives/color-picker-directive.js"></script>
+  <script src="js/directives/drawing-directive.js"></script>
+</head>
+
+<body>
+  <div class="container">
+
+
+
+    <div class="row">    
+     <div class="col-md-12">  
+      <div ng-controller="composerController">
+
+
+        <h1>{{test}}</h1>
+
+
+      </div>
+      </div>
+    </div>
+
+
+
+    <div class="row">    
+     <div class="col-md-12 upload-zone-wrapper">  
+      <div ng-controller="uploadCtrl">
+
+
+        <div ngf-drop
+            ng-model="file"
+            class="drop-box" 
+          ngf-drag-over-class="dragover"
+          ngf-multiple="false"
+          ngf-allow-dir="false"
+          ngf-accept="'image/*'" 
+          ngf-select>Drop file here or click to select file</div>
+        <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+        <!--Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">-->
+      </div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+
+</html>

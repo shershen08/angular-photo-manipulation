@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <link rel="stylesheet" href="components/bootstrap-css/css/bootstrap.css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="components/lodash/lodash.js"></script>
+  <script src="components/jquery/dist/jquery.js"></script>
+  <script src="components/angularjs/angular.js"></script>
+  <script src="components/ng-file-upload/ng-file-upload.js"></script>
+  <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
+
+  <link rel="stylesheet" href="components/ngDialog/css/ngDialog.css" />
+  <link rel="stylesheet" href="components/ngDialog/css/ngDialog-theme-default.min.css" />
+  <script src="components/ngDialog/js/ngDialog.min.js"></script>
+
+  <title>Editor</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script src="js/editor-app.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/controllers/canvas-controller.js"></script>
+  <script src="js/controllers/upload-controller.js"></script>
+  <script src="js/services/general-data-service.js"></script>
+  <script src="js/services/worker-service.js"></script>
+  <script src="js/directives/color-picker-directive.js"></script>
+  <script src="js/directives/drawing-directive.js"></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="row" ng-controller="canvasCont" style="display:none;">
+      <!-- RIGHT COLUMN -->
+      <div class="col-md-3">
+        <div class="toolbox well well-sm">
+        <h4>Colors</h4>
+          <div class="colorblock" ng-repeat="color in colorsArray" style="background:{{color}}" ng-click="selectColor(color)" ng-class="{'selected':color==selectedcolor}"></div>
+          
+        <h4>Brushes</h4>
+          <div class="sizeblock" ng-repeat="size in sizesArray" style="width:{{size}}px;height:{{size}}px" ng-click="selectSize(size)" ng-class="{'selected':size==selectedsize}"></div>
+        </div>
+
+      </div>
+
+      <!-- CENTRAL ZONE -->
+      <div class="col-md-7">
+
+        <div class="layer-box" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px;">
+          <canvas ng-class="{active: (activeLayerIndex == layer.id), hidden : !layer.visible }" ng-repeat="layer in layers" layerid="layer.id" width="{{canvasWidth}}" height="{{canvasHeight}}" drawing=""></canvas>
+        </div>
+
+      </div>
+
+      <!-- LEFT COLUMN -->
+      <div class="col-md-2">
+
+        <!--layers settings-->
+        <div class="controls well well-sm">
+          <h4>Layers <span class="badge">{{layers.length}}</span></h4>
+          <button ng-click="addLayer()" class="btn btn-primary">Add layer</button>
+
+          <ul class="list-group layer-list">
+            <li title="{{layer.id}}" class="list-group-item" ng-repeat="layer in layers track by $index" ng-click="selectThis(layer)" ng-class="{'layer-invisible': !layer.visible , 'layer-active':layer.id == activeLayerIndex}">
+              <button type="button" class="btn btn-default btn-xs" ng-click="removeThis(layer)"><span class="glyphicon glyphicon-remove"></span>
+              </button>
+              {{layer.name}}
+              <button type="button" class="btn btn-default btn-xs visibility-button" ng-show="layer.visible" ng-click="toggleThis(layer)"><span class="glyphicon glyphicon-eye-close"></span>
+              </button>
+              <button type="button" class="btn btn-default btn-xs visibility-button" ng-show="!layer.visible" ng-click="toggleThis(layer)"><span class="glyphicon glyphicon-eye-open"></span>
+              </button>
+            </li>
+          </ul>
+
+        </div>
+
+        <div class="controls well well-sm">
+          <h4>Images /h4>
+            
+
+        </div>
+
+
+      </div>
+    </div>
+
+
+    <div class="row">    
+     <div class="col-md-12 upload-zone-wrapper">  
+      <div ng-controller="uploadCtrl">
+
+
+<!--   <div class="button" >Upload on file change</div> -->
+
+
+        <div ngf-drop
+            ng-model="file"
+            class="drop-box" 
+          ngf-drag-over-class="dragover"
+          ngf-multiple="false"
+          ngf-allow-dir="false"
+          ngf-accept="'image/*'" 
+          ngf-select>Drop file here or click to select file</div>
+        <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+        <!--Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">-->
+      </div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+
+</html>

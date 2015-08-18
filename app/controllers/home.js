@@ -173,7 +173,7 @@ router.use('/layout', function (req, res, next) {
   res.render('layout', { title : 'layout page', content: 'content test' }); 
 });
 
-router.get('/folderlist', function (req, res) {
+router.get('/api/folderlist', function (req, res) {
   debug('----------------- /folderlist -----------------');
   var query = _utils.getQuery(req);
   if(query.folder){
@@ -187,14 +187,20 @@ router.get('/folderlist', function (req, res) {
         filePathArray.push(fileName);
       }
     });
-    res.render('folderlist', { title : query.folder, files: filePathArray}); 
+
+    if(query.format == 'json') {
+      _utils.writeJsonResponse(res, filePathArray);
+    } else {
+      res.render('folderlist', { title : query.folder, files: filePathArray}); 
+    }
+    
 
   } else {
     _utils.handleWrondResponse(res, 400);
   }
 });
 
-router.get('/getimageparts', function (req, res, next) {
+router.get('/api/getimageparts', function (req, res, next) {
   debug('----------------- /getimageparts -----------------');
 
 
@@ -217,7 +223,7 @@ router.get('/getimageparts', function (req, res, next) {
 });
 
 
-router.post('/imageanalysis', function (req, res, next) {
+router.post('/api/imageanalysis', function (req, res, next) {
   debug('----------------- /imageanalysis -----------------');
 
   var query = req.body;
