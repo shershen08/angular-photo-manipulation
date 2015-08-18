@@ -39,8 +39,39 @@
       <div ng-controller="composerController">
 
 
-        <h1>{{test}}</h1>
 
+      <div class="block-wrapper file-browser">
+      <div class="block-title">File browser</div>
+              <input ng-model="files.foldername" ng-show="filesList" type="text">
+      <button ng-click="browseFolder()">&raquo;</button>
+         <ul>
+        <li ng-repeat="file in filesList"
+            class="file-item"
+            ng-class="{'first':(file == _requestDataTemplate.fileA), 'second':(file == _requestDataTemplate.fileB)}">
+          {{file}}
+          <button ng-click="selectFile(file, 'A')">Select as 1</button>
+          <button ng-click="selectFile(file, 'B')">Select as 2</button>
+        </li>
+      </ul>
+      </div>
+
+
+      <div class="block-wrapper rectangle-coordinates">
+      <div class="block-title">Selection zone</div>
+        X axis from: <input ng-model="_requestDataTemplate.x" type="number" class="small-input">
+        X axis to: <input ng-model="_requestDataTemplate.y" type="number" class="small-input"><br>
+        Y axis from: <input ng-model="_requestDataTemplate._x" type="number" class="small-input">
+        Y axis to : <input ng-model="_requestDataTemplate._y" type="number" class="small-input"><br>
+      </div>
+     
+   <div class="block-wrapper result-image">
+    <img ng-src="{{comparanceImg}}" class="">
+   </div>
+
+
+
+<br><br><br>
+   {{reqData | json}}
 
       </div>
       </div>

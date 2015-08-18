@@ -18,8 +18,28 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
             'format' : 'json'
         };
 
-        $http.get('/api/folderlist', requestDetails).success(function(data) {
-            deferred.resolve(data.response);
+        $http.get('/api/folderlist', {
+            'params' : requestDetails
+        }).success(function(data) {
+            deferred.resolve(data);
+        }).error(function(data, status, headers, config) {
+            deferred.reject("Error: request returned status " + status);
+        });
+
+        return deferred.promise;
+
+    }
+
+
+    serviceObj.getCompareImages = function(getRequestObject){
+
+
+        var deferred = $q.defer();
+
+        $http.get('/api/getimageparts', {
+            'params' : getRequestObject
+        }).success(function(data) {
+            deferred.resolve(data);
         }).error(function(data, status, headers, config) {
             deferred.reject("Error: request returned status " + status);
         });

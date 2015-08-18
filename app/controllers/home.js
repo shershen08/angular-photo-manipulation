@@ -16,9 +16,6 @@ var url = require('url');
 var _ = require('lodash');
 var async = require('async');
 
-//variables
-var galleryFilePath = '../files/';  
-var tmpFilePath = '../tmp/';
 
 //////////////////////
 ////// CONTROLLERS
@@ -42,8 +39,8 @@ function displayFileWithEffects(filePath, response, transformationsObject){
 
 
       var buffer;
-      var newFileName = getUUIDv4() + '.' + fileExtension;
-      var newFilePath = path.join(__dirname, (tmpFilePath + newFileName));
+      var newFileName = _utils.getUUIDv4() + '.' + fileExtension;
+      var newFilePath = path.join(__dirname, (config.tmpFilePath + newFileName));
       var img = image.batch();
 
       transformationsObject.forEach(function(propItem){
@@ -58,17 +55,13 @@ function displayFileWithEffects(filePath, response, transformationsObject){
         } 
       });
 
-      img.writeFile(newFilePath, function(err){
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write(newFilePath);
-        response.end();
-      });
+      _utils.saveImageAndSendUrl(img, newFilePath, response);
 
   });
 }
 
 
-//http://localhost:3000/getimageparts?fileA=IMG_3031.jpg&fileB=IMG_3032.jpg&xStart=0&xStart=0&xEnd=100&yEnd=100
+// /api/getimageparts?fileA=IMG_3031.jpg&fileB=IMG_3032.jpg&xStart=0&xStart=0&xEnd=100&yEnd=100
 
 function displayFileParts(cropConfig, response){
 
@@ -77,9 +70,12 @@ function displayFileParts(cropConfig, response){
 
   debug(cropConfig);
 
+  var newFileName = _utils.getUUIDv4() + '.' + fileExtension;
+  var newFilePath = path.join(__dirname, (config.tmpFilePath + newFileName));
+
   var selectionHeight = parseInt(cropConfig.yEnd - cropConfig.yStart);
   var selectionLength = parseInt(cropConfig.xEnd - cropConfig.xStart);
-  var tmpFilePath = '../tmp/';
+
   var _v = parseInt(cropConfig.xStart);
   var _h = parseInt(cropConfig.yStart);
 
@@ -141,17 +137,16 @@ function displayFileParts(cropConfig, response){
     }
   ], function (err, result) {
 
-  result.toBuffer('jpg', function(err, buffer){
-    response.writeHead(200, {'Content-Type': 'image/jpg'});
-    response.write(buffer);
-    response.end();
-  });
+    //can write image - but for now shows url
+    //_utils.writeImageResponse(response, result);
 
+    _utils.saveImageAndSendUrl(result, newFilePath, response);
 });
 
     
  })
 }
+
 
 
 
@@ -180,7 +175,7 @@ router.get('/api/folderlist', function (req, res) {
     
     var filePathArray = [];
 
-    _utils.walk(path.join(__dirname, galleryFilePath ), function(filePath, stat) {
+    _utils.walk(path.join(__dirname, config.galleryFilePath ), function(filePath, stat) {
       var fileName = filePath.split('/');
       fileName = fileName[fileName.length-1];
       if(fileName[0] != '.'){
@@ -209,8 +204,8 @@ router.get('/api/getimageparts', function (req, res, next) {
 
   if(query.fileA && query.fileB){
     var fileConfig = {
-      'aPath' : path.join(__dirname, (galleryFilePath + query.fileA)),
-      'bPath' : path.join(__dirname, (galleryFilePath + query.fileB)),
+      'aPath' : path.join(__dirname, (config.galleryFilePath + query.fileA)),
+      'bPath' : path.join(__dirname, (config.galleryFilePath + query.fileB)),
       'xStart': (query.x || 0),
       'yStart': (query.y || 0),
       'xEnd': (query._x || 100),
@@ -229,7 +224,7 @@ router.post('/api/imageanalysis', function (req, res, next) {
   var query = req.body;
 
   if(query.file){
-    var filePath = path.join(__dirname, (galleryFilePath + query.file));
+    var filePath = path.join(__dirname, (config.galleryFilePath + query.file));
     var transformationsObject = query.effects;
     displayFileWithEffects(filePath, res, transformationsObject);
   } else {

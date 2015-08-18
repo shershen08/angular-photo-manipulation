@@ -85,3 +85,14 @@ a {
     height: 100px;
     font-size: 3em;
   }
+
+  .file-item.first {
+    background: #00f;  
+  }
+  .file-item.second {
+    background: #f00;  
+  }
+
+  .small-input {
+    width: 50px;
+  }

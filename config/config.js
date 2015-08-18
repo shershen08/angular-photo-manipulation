@@ -15,7 +15,9 @@ var config = {
     },
     port: 3000,
     uploadDir: '/api/uploads',
-    uploadedFilesDir: 'public/gallery'
+    uploadedFilesDir: 'public/gallery',
+    galleryFilePath : '../files/',
+    tmpFilePath : '../../public/img/tmp/'
     //,db: 'mongodb://localhost/image-twister-development'
   },
 
