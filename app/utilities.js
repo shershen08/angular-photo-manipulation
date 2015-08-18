@@ -25,7 +25,10 @@ Utils.prototype = {
 			r.end();
 		});
 	},
-
+	sendImagesArray: function(imgArray, r){
+		r.writeHead(200, {'Content-Type': 'application/json'});
+		r.end(JSON.stringify(imgArray));
+	},
 	saveImageAndSendUrl : function(img, filepath, r){
 		img.writeFile(filepath, function(err){
 			r.writeHead(200, {'Content-Type': 'text/html'});

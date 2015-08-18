@@ -2,6 +2,7 @@ node_modules/
 public/components
 .sass-cache
 public/gallery
+public/img/tmp
 app/tmp
 app/files
 npm-debug.log

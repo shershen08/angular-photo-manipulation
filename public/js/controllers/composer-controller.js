@@ -21,25 +21,50 @@ var composerControllerFunction = function($scope, APP_PRESETS, generalService) {
 	var makeRequest = function (updateData){
 
 		$scope.reqData = angular.extend($scope._requestDataTemplate, updateData);
-
+		/*
 		generalService.getCompareImages($scope.reqData).then(function(data){
-
 			var frontendUrl = data.split('public/')[1];
-
 			$scope.comparanceImg = frontendUrl;
-
 		});
-	}
+*/
 
-
-	$scope.$watch('compareFiles', function(newVal, oldVal){
-		makeRequest(newVal);
+generalService.getTwoImages($scope.reqData).then(function(data){
+	$scope.comparanceImg = data.map(function(item){
+		var t;
+		t = item.split('public/')[1];
+		return t;
 	})
+	$scope.resembleRun();
+});
+
+}
+
+$scope.resembleRun = function(){
+
+	resemble($scope.comparanceImg[0]).compareTo($scope.comparanceImg[1])
+	.ignoreAntialiasing().onComplete(function(data){
+
+		$scope.diffPers = data.misMatchPercentage;
+		var diffImage = new Image();
+		diffImage.src = data.getImageDataUrl();
+		$('#image-diff').html(diffImage);
+		
+		$scope.$apply();
+	});
 
 
-	var _failCallbacks = function(err){
-		console.error('failed to load data!', err);
-	}
+}
+
+
+
+$scope.$watch('compareFiles', function(newVal, oldVal){
+	makeRequest(newVal);
+})
+
+
+var _failCallbacks = function(err){
+	console.error('failed to load data!', err);
+}
 
 };
 

@@ -48,6 +48,23 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
 
     }
 
+      serviceObj.getTwoImages = function(getRequestObject){
+
+
+        var deferred = $q.defer();
+
+        $http.get('/api/separateimages', {
+            'params' : getRequestObject
+        }).success(function(data) {
+            deferred.resolve(data);
+        }).error(function(data, status, headers, config) {
+            deferred.reject("Error: request returned status " + status);
+        });
+
+        return deferred.promise;
+
+    }
+
     return serviceObj;
 
 };

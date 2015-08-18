@@ -70,9 +70,6 @@ function displayFileParts(cropConfig, response){
 
   debug(cropConfig);
 
-  var newFileName = _utils.getUUIDv4() + '.' + fileExtension;
-  var newFilePath = path.join(__dirname, (config.tmpFilePath + newFileName));
-
   var selectionHeight = parseInt(cropConfig.yEnd - cropConfig.yStart);
   var selectionLength = parseInt(cropConfig.xEnd - cropConfig.xStart);
 
@@ -126,12 +123,6 @@ function displayFileParts(cropConfig, response){
     },
     function(image, mainImg, err, taskDone){
       baseImageInitial.paste((selectionLength-1), 0, image, function(err, imageResult){
-
-
-
-
-
-
          taskDone(err, imageResult, '6');
       });
     }
@@ -140,13 +131,79 @@ function displayFileParts(cropConfig, response){
     //can write image - but for now shows url
     //_utils.writeImageResponse(response, result);
 
-    _utils.saveImageAndSendUrl(result, newFilePath, response);
+    _utils.saveImageAndSendUrl(result, getNewFilePath(fileExtension), response);
 });
 
     
  })
 }
 
+function getNewFilePath(fileExtension){
+    var newFileName = _utils.getUUIDv4() + '.' + fileExtension;
+    var newFilePath = path.join(__dirname, (config.tmpFilePath + newFileName));
+    return newFilePath;
+}
+
+function displayTwoFileParts(cropConfig, response){
+
+  var fileExtension = cropConfig.aPath.split('.');
+  fileExtension = fileExtension[(fileExtension.length-1)];
+
+  debug(cropConfig);
+
+
+
+  var selectionHeight = parseInt(cropConfig.yEnd - cropConfig.yStart);
+  var selectionLength = parseInt(cropConfig.xEnd - cropConfig.xStart);
+
+  var _v = parseInt(cropConfig.xStart);
+  var _h = parseInt(cropConfig.yStart);
+
+  if(selectionLength <= 0 || selectionLength <= 0 )  {
+    _utils.handleWrondResponse(response, 400);
+    return ;
+  }
+
+ lwip.create(selectionLength*2, selectionHeight, 'white', function(err, baseImageInitial){
+
+  function taskDone(tID){
+    debug(' ----------- Task ', tID);
+  }
+
+  async.parallel([
+    //
+    //image 1
+    function(taskDone) {
+      lwip.open(cropConfig.aPath, function(err, image){
+           image.crop(_v, _h, _v + (selectionLength-1), _h + (selectionHeight-1),
+            function(err, imageCropped){
+              var newFilePath = getNewFilePath(fileExtension);
+              imageCropped.writeFile(newFilePath, function(err){
+                taskDone(err, newFilePath);
+              });
+          })
+      });
+    },
+    //
+    //image 2
+    function(taskDone) {
+      lwip.open(cropConfig.bPath, function(err, image){
+        image.crop(_v, _h, _v + (selectionLength-1), _h + (selectionHeight-1),
+          function(err, imageCropped2){
+            var newFilePath = getNewFilePath(fileExtension);
+            imageCropped2.writeFile(newFilePath, function(err){
+                taskDone(err, newFilePath);
+              });
+        });
+      });
+    }
+  ], function (err, result) {
+    _utils.sendImagesArray(result, response);
+  });
+
+    
+ })
+}
 
 
 
@@ -217,6 +274,27 @@ router.get('/api/getimageparts', function (req, res, next) {
   }
 });
 
+router.get('/api/separateimages', function (req, res, next) {
+  debug('----------------- /separateimages -----------------');
+
+
+  var query = _utils.getQuery(req);
+  debug(query);
+
+  if(query.fileA && query.fileB){
+    var fileConfig = {
+      'aPath' : path.join(__dirname, (config.galleryFilePath + query.fileA)),
+      'bPath' : path.join(__dirname, (config.galleryFilePath + query.fileB)),
+      'xStart': (query.x || 0),
+      'yStart': (query.y || 0),
+      'xEnd': (query._x || 100),
+      'yEnd': (query._y || 100)
+    }
+    displayTwoFileParts(fileConfig, res);
+  } else {
+    _utils.handleWrondResponse(res, 400);
+  }
+});
 
 router.post('/api/imageanalysis', function (req, res, next) {
   debug('----------------- /imageanalysis -----------------');

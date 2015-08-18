@@ -96,3 +96,6 @@ a {
   .small-input {
     width: 50px;
   }
+  #image-diff {
+        display: inline-block;
+  }

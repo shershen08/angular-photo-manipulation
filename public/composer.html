@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="components/ngDialog/css/ngDialog-theme-default.min.css" />
   <script src="components/ngDialog/js/ngDialog.min.js"></script>
 
+  <script src="components/resemblejs/resemble.js"></script>
+
   <title>Composer</title>
 
   <link rel="stylesheet" href="css/style.css" />
@@ -59,20 +61,23 @@
       <div class="block-wrapper rectangle-coordinates">
       <div class="block-title">Selection zone</div>
         X axis from: <input ng-model="_requestDataTemplate.x" type="number" class="small-input">
-        X axis to: <input ng-model="_requestDataTemplate.y" type="number" class="small-input"><br>
-        Y axis from: <input ng-model="_requestDataTemplate._x" type="number" class="small-input">
-        Y axis to : <input ng-model="_requestDataTemplate._y" type="number" class="small-input"><br>
+        to: <input ng-model="_requestDataTemplate._x" type="number" class="small-input"><br>
+        Y axis from: <input ng-model="_requestDataTemplate.y" type="number" class="small-input">
+        to : <input ng-model="_requestDataTemplate._y" type="number" class="small-input"><br>
       </div>
      
    <div class="block-wrapper result-image">
-    <img ng-src="{{comparanceImg}}" class="">
+    <img ng-repeat="file in comparanceImg track by $index" ng-src="{{file}}" class="">
+&nbsp;
+    <div id="image-diff"></div>
    </div>
 
 
 
 <br><br><br>
-   {{reqData | json}}
-
+   {{diffPers || ''}}
+<br>
+add: size selection; keyboard navigation;
       </div>
       </div>
     </div>
