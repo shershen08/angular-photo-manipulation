@@ -48,6 +48,22 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
 
     }
 
+
+     serviceObj.clearTmpFolder = function(){
+
+
+        var deferred = $q.defer();
+
+        $http.get('/api/system/cleartmp').success(function(data) {
+            deferred.resolve(data);
+        }).error(function(data, status, headers, config) {
+            deferred.reject("Error: request returned status " + status);
+        });
+
+        return deferred.promise;
+
+    }
+
       serviceObj.getTwoImages = function(getRequestObject){
 
 

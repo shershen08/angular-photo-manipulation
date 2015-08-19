@@ -55,6 +55,12 @@ $scope.resembleRun = function(){
 
 }
 
+$scope.cleanTmpFolder = function(){
+	generalService.clearTmpFolder().then(function(data){
+		console.info('Tmp folder cleaned');
+	});
+}
+
 
 
 $scope.$watch('compareFiles', function(newVal, oldVal){

@@ -29,6 +29,7 @@
   <script src="js/services/general-data-service.js"></script>
   <script src="js/directives/color-picker-directive.js"></script>
   <script src="js/directives/drawing-directive.js"></script>
+  <script src="js/directives/coordinates-block-directive.js"></script>
 </head>
 
 <body>
@@ -46,6 +47,9 @@
       <div class="block-title">File browser</div>
               <input ng-model="files.foldername" ng-show="filesList" type="text">
       <button ng-click="browseFolder()">&raquo;</button>
+      <br>
+      <button ng-click="cleanTmpFolder()">Clear tmp folder</button>
+
          <ul>
         <li ng-repeat="file in filesList"
             class="file-item"
@@ -77,7 +81,7 @@
 <br><br><br>
    {{diffPers || ''}}
 <br>
-add: size selection; keyboard navigation;
+add: 1) size selection; 2) keyboard navigation, 3) /tmp folder cleanup;
       </div>
       </div>
     </div>
