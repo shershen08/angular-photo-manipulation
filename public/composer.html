@@ -6,17 +6,26 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- core libs -->
   <script src="components/lodash/lodash.js"></script>
   <script src="components/jquery/dist/jquery.js"></script>
   <script src="components/angularjs/angular.js"></script>
+  <!-- keyboard support -->
+  <script src="components/angular-keyboard/keyboard.min.js"></script>
+  <!-- image selection -->
+  <script src="components/ng-img-crop/compile/unminified/ng-img-crop.js"></script>
+  <link rel="stylesheet" type="text/css" href="components/ng-img-crop/compile/unminified/ng-img-crop.css">
+  <!-- file upload -->
   <script src="components/ng-file-upload/ng-file-upload.js"></script>
+  <!-- clientside image comparison -->
+  <script src="components/resemblejs/resemble.js"></script>
+  <!-- ui router -->
   <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
-
+  <!-- dialog box -->
   <link rel="stylesheet" href="components/ngDialog/css/ngDialog.css" />
   <link rel="stylesheet" href="components/ngDialog/css/ngDialog-theme-default.min.css" />
   <script src="components/ngDialog/js/ngDialog.min.js"></script>
 
-  <script src="components/resemblejs/resemble.js"></script>
 
   <title>Composer</title>
 
@@ -33,7 +42,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container-fluid">
 
 
 
@@ -50,13 +59,16 @@
       <br>
       <button ng-click="cleanTmpFolder()">Clear tmp folder</button>
 
-         <ul>
-        <li ng-repeat="file in filesList"
+         <ul kb-list kb-cyclic>
+        <li ng-repeat="file in filesList track by $index"
             class="file-item"
+            kb-item="$index"
+            kb-selected-class="info"
+            kb-invoke="selectFile(file, 'B')"
             ng-class="{'first':(file == _requestDataTemplate.fileA), 'second':(file == _requestDataTemplate.fileB)}">
           {{file}}
-          <button ng-click="selectFile(file, 'A')">Select as 1</button>
-          <button ng-click="selectFile(file, 'B')">Select as 2</button>
+          <button ng-click="selectFile(file, 'A')" class="first">Select as 1</button>
+          <button ng-click="selectFile(file, 'B')" class="second">Select as 2</button>
         </li>
       </ul>
       </div>
@@ -75,13 +87,16 @@
 &nbsp;
     <div id="image-diff"></div>
    </div>
-
-
-
-<br><br><br>
-   {{diffPers || ''}}
 <br>
-add: 1) size selection; 2) keyboard navigation, 3) /tmp folder cleanup;
+<label>Diff: </label> {{diffPers || ''}}
+
+ <div class="block-wrapper navigation-image">
+-=Big image to show here=-
+ </div>
+
+
+<br><br><br><br>
+add: 1) size selection; 
       </div>
       </div>
     </div>

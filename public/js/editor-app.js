@@ -1,4 +1,4 @@
-var app = angular.module("app", ['ngDialog', 'ui.router', 'ngFileUpload']);
+var app = angular.module("app", ['ngDialog', 'ui.router', 'ngFileUpload', 'keyboard']);
 
 app.config(['ngDialogProvider', function (ngDialogProvider) {
     ngDialogProvider.setDefaults({

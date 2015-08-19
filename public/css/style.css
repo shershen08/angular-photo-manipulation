@@ -86,10 +86,10 @@ a {
     font-size: 3em;
   }
 
-  .file-item.first {
+  .file-item.first button.first{
     background: #00f;  
   }
-  .file-item.second {
+  .file-item.second button.second{
     background: #f00;  
   }
 
