@@ -18,8 +18,24 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
             'format' : 'json'
         };
 
-        $http.get('/api/folderlist', {
+        $http.get('/folderlist', {
             'params' : requestDetails
+        }).success(function(data) {
+            deferred.resolve(data);
+        }).error(function(data, status, headers, config) {
+            deferred.reject("Error: request returned status " + status);
+        });
+
+        return deferred.promise;
+
+    }
+
+    serviceObj.getImageDetails = function(fileName) {
+
+        var deferred = $q.defer();
+
+        $http.get(APP_PRESETS.systemURL + '/imagedetails', {
+            'params' : {"filename" : fileName}
         }).success(function(data) {
             deferred.resolve(data);
         }).error(function(data, status, headers, config) {
@@ -36,7 +52,7 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
 
         var deferred = $q.defer();
 
-        $http.get('/api/getimageparts', {
+        $http.get('/getimageparts', {
             'params' : getRequestObject
         }).success(function(data) {
             deferred.resolve(data);
@@ -54,7 +70,7 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
 
         var deferred = $q.defer();
 
-        $http.get('/api/system/cleartmp').success(function(data) {
+        $http.get(APP_PRESETS.systemURL + '/cleartmp').success(function(data) {
             deferred.resolve(data);
         }).error(function(data, status, headers, config) {
             deferred.reject("Error: request returned status " + status);
@@ -68,8 +84,22 @@ var generalServicefunction = function($http, $window, $q, APP_PRESETS) {
 
 
         var deferred = $q.defer();
+        console.log(getRequestObject.x, getRequestObject._x);
+        $http.get('/separateimages', {
+            'params' : getRequestObject
+        }).success(function(data) {
+            deferred.resolve(data);
+        }).error(function(data, status, headers, config) {
+            deferred.reject("Error: request returned status " + status);
+        });
 
-        $http.get('/api/separateimages', {
+        return deferred.promise;
+
+    }
+      serviceObj.getImagesBlocks = function(getRequestObject){
+
+        var deferred = $q.defer();
+        $http.get('/imageblocks', {
             'params' : getRequestObject
         }).success(function(data) {
             deferred.resolve(data);

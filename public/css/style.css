@@ -99,3 +99,6 @@ a {
   #image-diff {
         display: inline-block;
   }
+  .block-item {
+    display: inline-block;
+  }

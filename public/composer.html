@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="css/style.css" />
 
   <script src="js/editor-app.js"></script>
+  <script src="js/app-config.js"></script>
   <script src="js/routes.js"></script>
   <script src="js/controllers/upload-controller.js"></script>
   <script src="js/controllers/composer-controller.js"></script>
@@ -58,6 +59,8 @@
       <button ng-click="browseFolder()">&raquo;</button>
       <br>
       <button ng-click="cleanTmpFolder()">Clear tmp folder</button>
+      <button ng-click="compareMultiple()">compareMultiple</button>
+                <button ng-click="clearList()" class="second">clearList</button>
 
          <ul kb-list kb-cyclic>
         <li ng-repeat="file in filesList track by $index"
@@ -67,8 +70,10 @@
             kb-invoke="selectFile(file, 'B')"
             ng-class="{'first':(file == _requestDataTemplate.fileA), 'second':(file == _requestDataTemplate.fileB)}">
           {{file}}
-          <button ng-click="selectFile(file, 'A')" class="first">Select as 1</button>
-          <button ng-click="selectFile(file, 'B')" class="second">Select as 2</button>
+          <!-- <button ng-click="selectFile(file, 'A')" class="first">Select as 1</button> -->
+          <button ng-click="setAsBase(file)" class="first">Select as base</button>
+          <button ng-click="selectFile(file, 'B')" class="second">Compare</button>
+
         </li>
       </ul>
       </div>
@@ -82,21 +87,28 @@
         to : <input ng-model="_requestDataTemplate._y" type="number" class="small-input"><br>
       </div>
      
+ <!--   <div class="block-wrapper result-image">
+      <img ng-repeat="file in comparanceImg track by $index" ng-src="{{file}}" class="">
+      <div id="image-diff"></div>
+   </div> -->
+
+
    <div class="block-wrapper result-image">
-    <img ng-repeat="file in comparanceImg track by $index" ng-src="{{file}}" class="">
-&nbsp;
-    <div id="image-diff"></div>
+     <div ng-repeat="imageBlock in imagePieces track by $index" class="block-item">
+        <img ng-repeat="file in imageBlock.images track by $index" ng-src="{{file}}" class="img-item-{{$index}}">
+        <div class="image-block-diff"><img ng-src="{{imageBlock.diffimg}}"></div>
+        <div class="image-block-details">{{imageBlock.diffdata}}</div>
+     </div>
    </div>
 <br>
-<label>Diff: </label> {{diffPers || ''}}
 
  <div class="block-wrapper navigation-image">
--=Big image to show here=-
  </div>
 
 
-<br><br><br><br>
-add: 1) size selection; 
+{{baseImageData | json}}
+
+
       </div>
       </div>
     </div>
